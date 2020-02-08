@@ -41,7 +41,7 @@
             
 
             const Header = (data, hashvalue) => {
-                const nav = createElement('a', {className: " nav-item", href: `#${data.children.toLowerCase()}`}, `${data.children}(${data[0].length})`);
+                const nav = createElement('a', {onClick: () => addClass(), className: " nav-item", href: `#${data.children.toLowerCase()}`}, `${data.children}(${data[0].length})`);
                 // console.log('header', data)
                 return createElement('li', null, nav);
             }
@@ -95,11 +95,15 @@
                     const {companies, products, view} = this.state
                     const companiesHeader = createElement(Header, [companies], "COMPANIES")
                     const productsHeader = createElement(Header, [products], "PRODUCTS")
+
+                    const addClass = () => {
+                        console.log("sadas");
+                    };
+                    
                     // console.log(companies);
                     // const list = createElement(List, [companies], view);
                     const header = createElement('ul', {className: "navbar"}, companiesHeader, productsHeader);
                     let list = createElement(List, {data: this.state}, view);
-
 
                     return createElement('div', null, header, list)
                 }

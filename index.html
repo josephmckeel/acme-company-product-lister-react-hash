@@ -5,28 +5,107 @@
         <script src="https://unpkg.com/react-dom@16/umd/react-dom.development.js" crossorigin></script>
         <script src='https://cdnjs.cloudflare.com/ajax/libs/Faker/3.1.0/faker.js'></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.19.2/axios.min.js"></script>
-        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css">
+        <link href="https://fonts.googleapis.com/css?family=Open+Sans&display=swap" rel="stylesheet">
         <style>
+            body {
+                font-family: verdana;
+            }
+            .navbar {
+                display: flex;
+                justify-content: space-around;
+                list-style-type: none;
+            }
+            .nav-item {
+                text-decoration: none;
+            }
+            .active {
+                background-color: tomato;
+                padding: 1rem;
+                border-radius: 10px;
+                color: white;
+            }
+            .data {
+                padding: 0.2rem;
+            }
         </style>
     </head>
     <body>
         <div id="root">
         </div>
         <script>
+            const companiesAPI = axios.get('https://acme-users-api-rev.herokuapp.com/api/companies')
+            const productsAPI = axios.get('https://acme-users-api-rev.herokuapp.com/api/products')
             const {Component} = React;
             const {render} = ReactDOM;
+            const {createElement} = React
+            
+
+            const Header = (data, hashvalue) => {
+                const nav = createElement('a', {className: " nav-item", href: `#${data.children.toLowerCase()}`}, `${data.children}(${data[0].length})`);
+                // console.log('header', data)
+                return createElement('li', null, nav);
+            }
+
+            const List = (data, view) => {
+                // console.log(view)
+                // console.log('list', data.data[data.children], 'view', data.children)
+                const lis = data.data[data.children].map((item, idx) => {
+                    // console.log(item, idx)
+                    return createElement('li', {className: "data", key: idx}, item.name)
+                })
+                // console.log(lis);
+                return createElement('ul', null, lis)
+                // console.log(lis);
+                return null
+            }
+
+
             class App extends Component {
                 constructor() {
                     super();
-                    this.state = {
-                    };
+                    this.state = { companies: [], products: [], view: "companies"}; 
                 }
+
+                componentDidMount() {
+                    const dataPromise = Promise.all([companiesAPI, productsAPI]).then(responses => {
+                return {companies: responses[0].data, products: responses[1].data}
+            })
+                    const companies = dataPromise.then( data => this.setState({companies: data.companies}));
+                    const products = dataPromise.then( data => this.setState({products: data.products}));
+                    // console.log("mount");
+                    // console.log(view)
+                    window.addEventListener("hashchange", () => {
+                        const view = window.location.hash.slice(1)
+
+                        this.setState({view: view})
+                        // console.log('state', this.state)
+                        // if(view === "company") {
+                        //     list = renderList(view);
+
+                        // }
+                        // else if(view === "products") {
+                        //     list = renderList(view);
+                        // }
+                    });
+                }
+
                 render() {
-                    return null;
+                    // console.log("render");
+
+                    const {companies, products, view} = this.state
+                    const companiesHeader = createElement(Header, [companies], "COMPANIES")
+                    const productsHeader = createElement(Header, [products], "PRODUCTS")
+                    // console.log(companies);
+                    // const list = createElement(List, [companies], view);
+                    const header = createElement('ul', {className: "navbar"}, companiesHeader, productsHeader);
+                    let list = createElement(List, {data: this.state}, view);
+
+
+                    return createElement('div', null, header, list)
                 }
             };
             const root = document.querySelector("#root");
-            ReactDOM.render(React.createElement(App), root);
+            ReactDOM.render(createElement(App), root);
         </script>
     </body>
 </html>

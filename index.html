@@ -40,8 +40,8 @@
             const {createElement} = React
             
 
-            const Header = (data, hashvalue) => {
-                const nav = createElement('a', {onClick: () => addClass(), className: " nav-item", href: `#${data.children.toLowerCase()}`}, `${data.children}(${data[0].length})`);
+            const Header = (data) => {
+                const nav = createElement('a', {onClick: () => addClass(), className: "nav-item", href: `#${data.children.toLowerCase()}`}, `${data.children}(${data[0].length})`);
                 // console.log('header', data)
                 return createElement('li', null, nav);
             }
